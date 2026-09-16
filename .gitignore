@@ -39,6 +39,7 @@ next-env.d.ts
 # cloudflare
 .wrangler
 .mf
+.open-next
 
 # supabase
 supabase/.temp

@@ -1,9 +1,0 @@
-{
-  "/_not-found/page": "/_not-found",
-  "/page": "/",
-  "/dashboard/alumnos/page": "/dashboard/alumnos",
-  "/dashboard/aulas/page": "/dashboard/aulas",
-  "/dashboard/docentes/page": "/dashboard/docentes",
-  "/dashboard/horarios/page": "/dashboard/horarios",
-  "/dashboard/page": "/dashboard"
-}

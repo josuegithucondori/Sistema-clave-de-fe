@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --primary-dark: #0e2f44;
+  --secondary: #f39c12;
+  --secondary-light: #f1c40f;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Personalizaciones de Tailwind */
+@layer utilities {
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+  }
+}

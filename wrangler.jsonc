@@ -1,0 +1,9 @@
+{
+  "compatibility_date": "2025-02-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "name": "academia-clave-de-fe",
+  "pages_build_output_dir": ".open-next",
+  "observability": {
+    "enabled": true
+  }
+}

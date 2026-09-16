@@ -1,8 +1,0 @@
-name = "academia-clave-de-fe"
-compatibility_date = "2024-09-08"
-pages_build_output_dir = ".vercel/output/static"
-
-# Solo aplica si despliegas como Worker directo
-# [vars]
-# NEXT_PUBLIC_SUPABASE_URL = "tu-url"
-# NEXT_PUBLIC_SUPABASE_ANON_KEY = "tu-key"

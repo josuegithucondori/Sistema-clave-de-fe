@@ -1,6 +1,6 @@
 # Academia Clave de Fe
 
-Sistema de administracion academica con **Next.js 15**, **Supabase** (base de datos) y **Cloudflare Pages** (hosting).
+Sistema de administracion academica con **Next.js 15**, **Supabase** (base de datos) y **Cloudflare Pages** (hosting), desplegado automaticamente con **GitHub Actions**.
 
 ## Funcionalidades
 - Gestión de **Docentes** (CRUD)
@@ -15,6 +15,14 @@ Sistema de administracion academica con **Next.js 15**, **Supabase** (base de da
 - **Frontend:** Next.js 15 (App Router) + Tailwind CSS
 - **Backend/DB:** Supabase (PostgreSQL)
 - **Hosting:** Cloudflare Pages
+- **CI/CD:** GitHub Actions (deploy automatico en cada push a main)
+
+---
+
+## Guardar Token de GitHub (opcional pero recomendado)
+
+Por seguridad, el token que compartiste ya fue usado. **Revócalo** en:
+https://github.com/settings/tokens
 
 ---
 
@@ -37,18 +45,54 @@ Sistema de administracion academica con **Next.js 15**, **Supabase** (base de da
 
 ---
 
-## PASO 2: Configurar las Variables de Entorno
+## PASO 2: Configurar Cloudflare
 
-Crea un archivo `.env.local` en la raíz del proyecto con tus credenciales:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=TU-ANON-KEY-AQUI
-```
+1. Ve a [https://dash.cloudflare.com](https://dash.cloudflare.com) y crea una cuenta gratuita
+2. Ve a **My Profile → API Tokens → Create Token**
+3. Usa la plantilla **"Edit Cloudflare Workers"** (o create uno Custom con permisos):
+   - `Account - Cloudflare Pages - Edit`
+   - `Account - Workers Scripts - Edit`
+   - `Account - Account Settings - Read`
+4. Copia el **API Token** generado
+5. En el dashboard, tu **Account ID** está en la pagina principal
 
 ---
 
-## PASO 3: Desarrollo Local
+## PASO 3: Configurar los GitHub Secrets
+
+Ejecuta el script (responde las preguntas):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup-secrets.ps1
+```
+
+O configura los 4 secretos manualmente en:
+**GitHub → Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | Valor |
+|--------|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Tu Project URL de Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Tu anon key de Supabase |
+| `CLOUDFLARE_API_TOKEN` | Tu API token de Cloudflare |
+| `CLOUDFLARE_ACCOUNT_ID` | Tu Account ID de Cloudflare |
+
+---
+
+## PASO 4: Desplegar (automatico)
+
+El workflow en `.github/workflows/cloudflare-deploy.yml` se ejecuta en cada `git push` a la rama `main`:
+
+```bash
+git add .
+git commit -m "deploy"
+git push origin main
+```
+
+GitHub Actions compilara el proyecto (Next.js + OpenNext) y lo desplegara en Cloudflare Pages.
+
+---
+
+## Desarrollo Local
 
 ```bash
 npm install
@@ -61,79 +105,34 @@ Abre http://localhost:3000 y usa:
 
 ---
 
-## PASO 4: Desplegar en Cloudflare Pages
-
-### Opción A: Desde GitHub (recomendado)
-
-1. Sube el código a GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: sistema academia clave de fe"
-   git remote add origin https://github.com/TU-USUARIO/Sistema-clave-de-fe.git
-   git push -u origin main
-   ```
-
-2. Ve a [https://dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create**
-
-3. Conecta tu repositorio de GitHub
-
-4. Configura el build:
-   - **Framework preset:** Next.js
-   - **Build command:** `npm run cloudflare:build`
-   - **Build output directory:** `.open-next`
-   - **Node.js version:** 18 o 20
-
-5. Agrega las variables de entorno en **Settings → Environment Variables**:
-   - `NEXT_PUBLIC_SUPABASE_URL` → tu URL de Supabase
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` → tu anon key
-
-6. Click **Save and Deploy**
-
-### Opción B: Desde tu PC con Wrangler
-
-```bash
-npm install
-npx wrangler login
-npm run deploy
-```
-
----
-
-## PASO 5: Configurar Secrets de Cloudflare (si aplica)
-
-```bash
-npx wrangler pages secret put NEXT_PUBLIC_SUPABASE_URL --project-name academia-clave-de-fe
-npx wrangler pages secret put NEXT_PUBLIC_SUPABASE_ANON_KEY --project-name academia-clave-de-fe
-```
-
----
-
 ## Estructura del Proyecto
 
 ```
 academia-clave-de-fe/
+├── .github/workflows/
+│   └── cloudflare-deploy.yml    # CI/CD para Cloudflare Pages
 ├── supabase/
-│   └── schema.sql          # Esquema de la base de datos
+│   └── schema.sql              # Esquema de la base de datos
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx         # Login
-│   │   ├── layout.tsx       # Root layout
-│   │   ├── globals.css      # Estilos globales
+│   │   ├── page.tsx             # Login
+│   │   ├── layout.tsx           # Root layout
+│   │   ├── globals.css          # Estilos globales
 │   │   └── dashboard/
-│   │       ├── layout.tsx   # Layout con sidebar
-│   │       ├── page.tsx     # Dashboard principal
-│   │       ├── docentes/    # CRUD Docentes
-│   │       ├── alumnos/     # CRUD Alumnos
-│   │       ├── aulas/       # CRUD Aulas
-│   │       └── horarios/    # CRUD Horarios
+│   │       ├── layout.tsx       # Layout con sidebar
+│   │       ├── page.tsx         # Dashboard principal
+│   │       ├── docentes/        # CRUD Docentes
+│   │       ├── alumnos/         # CRUD Alumnos
+│   │       ├── aulas/           # CRUD Aulas
+│   │       └── horarios/        # CRUD Horarios
 │   ├── lib/
-│   │   └── supabase.ts      # Cliente Supabase
-│   ├── middleware.ts         # Protección de rutas
+│   │   └── supabase.ts          # Cliente Supabase
+│   ├── middleware.ts            # Protección de rutas
 │   └── types/
-│       └── index.ts         # Tipos TypeScript
-├── open-next.config.ts      # Config OpenNext (Cloudflare)
-├── wrangler.jsonc           # Config Cloudflare Workers
+│       └── index.ts             # Tipos TypeScript
+├── open-next.config.ts          # Config OpenNext (Cloudflare)
+├── wrangler.jsonc               # Config Cloudflare Workers
+├── setup-secrets.ps1            # Configura secretos de GitHub
 ├── next.config.js
 ├── tailwind.config.js
 ├── postcss.config.js
